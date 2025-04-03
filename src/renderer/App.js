@@ -127,7 +127,7 @@ export default defineComponent({
       return this.$store.getters.getSecColor
     },
 
-    locale: function() {
+    locale: function () {
       return this.$i18n.locale
     },
 
@@ -135,7 +135,7 @@ export default defineComponent({
       return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
     },
 
-    landingPage: function() {
+    landingPage: function () {
       return '/' + this.$store.getters.getLandingPage
     },
 
@@ -171,7 +171,7 @@ export default defineComponent({
 
     appTitle: 'setDocumentTitle'
   },
-  created () {
+  created() {
     this.checkThemeSettings()
     this.setLocale()
   },
@@ -200,6 +200,7 @@ export default defineComponent({
           ipcRenderer = require('electron').ipcRenderer
           this.setupListenersToSyncWindows()
           this.activateKeyboardShortcuts()
+          this.initializeGamepadSupport()
           this.openAllLinksExternally()
           this.enableSetSearchQueryText()
           this.enableOpenUrl()
@@ -225,7 +226,7 @@ export default defineComponent({
     })
   },
   methods: {
-    setDocumentTitle: function(value) {
+    setDocumentTitle: function (value) {
       document.title = value
       this.$nextTick(() => this.$refs.topNav?.setActiveNavigationHistoryEntryTitle(value))
     },
@@ -334,7 +335,7 @@ export default defineComponent({
       this.showBlogBanner = false
     },
 
-    handlePromptPortalUpdate: function(newVal) {
+    handlePromptPortalUpdate: function (newVal) {
       this.isPromptOpen = newVal
     },
 
@@ -427,7 +428,7 @@ export default defineComponent({
       }
     },
 
-    handleYoutubeLink: function (href, { doCreateNewWindow = false } = { }) {
+    handleYoutubeLink: function (href, { doCreateNewWindow = false } = {}) {
       this.getYoutubeUrlInfo(href).then((result) => {
         switch (result.urlType) {
           case 'video': {
@@ -539,7 +540,7 @@ export default defineComponent({
     },
 
     enableOpenUrl: function () {
-      ipcRenderer.on(IpcChannels.OPEN_URL, (event, url, { isLaunchLink = false } = { }) => {
+      ipcRenderer.on(IpcChannels.OPEN_URL, (event, url, { isLaunchLink = false } = {}) => {
         if (url) {
           this.handleYoutubeLink(url, { doCreateNewWindow: this.openDeepLinksInNewWindow && !isLaunchLink })
         }
@@ -560,13 +561,13 @@ export default defineComponent({
       }
     },
 
-    setWindowTitle: function() {
+    setWindowTitle: function () {
       if (this.windowTitle !== null) {
         this.setAppTitle(this.windowTitle)
       }
     },
 
-    setLocale: function() {
+    setLocale: function () {
       document.documentElement.setAttribute('lang', this.locale)
       if (this.isLocaleRightToLeft) {
         document.body.dir = 'rtl'
@@ -574,7 +575,167 @@ export default defineComponent({
         document.body.dir = 'ltr'
       }
     },
+    initializeGamepadSupport: function () {
+      let gamepads = []
+      let hidePointerTimeout = null // Timeout to hide the pointer after inactivity
 
+      // Poll for gamepad input
+      const pollGamepads = () => {
+        gamepads = navigator.getGamepads ? Array.from(navigator.getGamepads()).filter(gp => gp) : []
+        gamepads.forEach((gamepad, index) => {
+          if (gamepad) {
+            this.handleGamepadInput(gamepad, index)
+          }
+        })
+        requestAnimationFrame(pollGamepads)
+      }
+
+      this.handleGamepadInput = function (gamepad, index) {
+        const sensitivity = 10 // Adjust sensitivity for pointer movement
+        const pointer = document.getElementById('joystick-pointer') || createPointerElement() // Ensure pointer exists
+
+        // Get the current position of the pointer
+        let pointerX = parseInt(pointer.style.left || '0', 10)
+        let pointerY = parseInt(pointer.style.top || '0', 10)
+
+        let joystickMoved = false // Track if the joystick moved
+
+        // Handle joystick movement for all axes
+        gamepad.axes.forEach((axis, axisIndex) => {
+          if (Math.abs(axis) > 0.1) { // Deadzone threshold
+            joystickMoved = true
+            // console.log(`Gamepad ${index} Axis ${axisIndex} moved: ${axis}`)
+
+            // Map left joystick (axes 0 and 1) to pointer movement
+            if (axisIndex === 0 || axisIndex === 1) { // Left joystick
+              const deltaX = axisIndex === 0 ? axis * sensitivity : 0
+              const deltaY = axisIndex === 1 ? axis * sensitivity : 0
+
+              // Update pointer position
+              pointerX += deltaX
+              pointerY += deltaY
+
+              // Ensure the pointer stays within the window bounds
+              pointerX = Math.max(0, Math.min(window.innerWidth - 20, pointerX)) // 20 is the pointer size
+              pointerY = Math.max(0, Math.min(window.innerHeight - 20, pointerY))
+
+              // Apply the new position to the pointer
+              pointer.style.left = `${pointerX}px`
+              pointer.style.top = `${pointerY}px`
+            }
+
+            // Map right joystick (axes 2 and 3) to scrolling
+            if (axisIndex === 2 || axisIndex === 3) { // Right joystick
+              const scrollDeltaX = axisIndex === 2 ? axis * sensitivity : 0
+              const scrollDeltaY = axisIndex === 3 ? axis * sensitivity : 0
+
+              // Simulate scrolling
+              window.scrollBy(scrollDeltaX, scrollDeltaY)
+            }
+          }
+        })
+
+        // Show the pointer when the joystick moves
+        if (joystickMoved) {
+          pointer.style.display = 'block'
+          document.body.classList.add('hide-cursor') // Hide the system cursor
+          clearTimeout(hidePointerTimeout)
+          hidePointerTimeout = setTimeout(() => {
+            pointer.style.display = 'none' // Hide pointer after 1 second of inactivity
+            document.body.classList.remove('hide-cursor') // Show the system cursor
+          }, 1000)
+        }
+
+        // Handle button presses
+        gamepad.buttons.forEach((button, buttonIndex) => {
+          if (button.pressed) {
+            // console.log(`Gamepad ${index} Button ${buttonIndex} pressed`)
+
+            // Simulate a left mouse click on Button 0 (A button)
+            if (buttonIndex === 0) {
+              const clickEvent = new MouseEvent('click', {
+                bubbles: true,
+                cancelable: true,
+                view: window,
+                clientX: pointerX + 10, // Adjust for pointer size
+                clientY: pointerY + 10  // Adjust for pointer size
+              })
+
+              const elementUnderPointer = document.elementFromPoint(pointerX + 10, pointerY + 10)
+              if (elementUnderPointer) {
+                elementUnderPointer.dispatchEvent(clickEvent)
+                // console.log('Simulated left mouse click on:', elementUnderPointer)
+              }
+            }
+
+            // Simulate a right mouse click on Button 1 (B button)
+            if (buttonIndex === 1) {
+              const rightClickEvent = new MouseEvent('contextmenu', {
+                bubbles: true,
+                cancelable: true,
+                view: window,
+                clientX: pointerX + 10,
+                clientY: pointerY + 10
+              })
+
+              const elementUnderPointer = document.elementFromPoint(pointerX + 10, pointerY + 10)
+              if (elementUnderPointer) {
+                elementUnderPointer.dispatchEvent(rightClickEvent)
+                // console.log('Simulated right mouse click on:', elementUnderPointer)
+              }
+            }
+
+            // Simulate a middle mouse click on Button 2 (X button)
+            if (buttonIndex === 2) {
+              const middleClickEvent = new MouseEvent('auxclick', {
+                bubbles: true,
+                cancelable: true,
+                view: window,
+                clientX: pointerX + 10,
+                clientY: pointerY + 10,
+                button: 1 // Middle mouse button
+              })
+
+              const elementUnderPointer = document.elementFromPoint(pointerX + 10, pointerY + 10)
+              if (elementUnderPointer) {
+                elementUnderPointer.dispatchEvent(middleClickEvent)
+                // console.log('Simulated middle mouse click on:', elementUnderPointer)
+              }
+            }
+          }
+        })
+      }
+
+      // Helper function to create the pointer element
+      const createPointerElement = () => {
+        const pointer = document.createElement('div')
+        pointer.id = 'joystick-pointer'
+        pointer.style.position = 'absolute'
+        pointer.style.width = '20px'
+        pointer.style.height = '20px'
+        pointer.style.background = 'red'
+        pointer.style.borderRadius = '50%'
+        pointer.style.pointerEvents = 'none'
+        pointer.style.zIndex = '1000'
+        pointer.style.left = '50%' // Start in the center
+        pointer.style.top = '50%' // Start in the center
+        pointer.style.display = 'none' // Initially hidden
+        document.body.appendChild(pointer)
+        return pointer
+      }
+
+      // Listen for gamepad connection and disconnection
+      window.addEventListener('gamepadconnected', (event) => {
+        gamepads[event.gamepad.index] = event.gamepad
+      })
+
+      window.addEventListener('gamepaddisconnected', (event) => {
+        delete gamepads[event.gamepad.index]
+      })
+
+      // Start polling for gamepad input
+      pollGamepads()
+    },
     ...mapActions([
       'grabUserSettings',
       'grabAllProfiles',
