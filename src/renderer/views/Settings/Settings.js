@@ -18,6 +18,7 @@ import PasswordDialog from '../../components/PasswordDialog/PasswordDialog.vue'
 import FtToggleSwitch from '../../components/ft-toggle-switch/ft-toggle-switch.vue'
 import FtButton from '../../components/ft-button/ft-button.vue'
 import FtSettingsMenu from '../../components/FtSettingsMenu/FtSettingsMenu.vue'
+import GamePadSettings from '../../components/GamePadSettings/GamePadSettings.vue'
 
 const ACTIVE_CLASS_NAME = 'active'
 const SETTINGS_MOBILE_WIDTH_THRESHOLD = 1015
@@ -39,6 +40,7 @@ export default defineComponent({
     'ft-button': FtButton,
     'ft-toggle-switch': FtToggleSwitch,
     'ft-settings-menu': FtSettingsMenu,
+    'gamepad-settings': GamePadSettings,
     ...(process.env.IS_ELECTRON
       ? {
           'proxy-settings': ProxySettings,
@@ -57,7 +59,7 @@ export default defineComponent({
     }
   },
   computed: {
-    locale: function() {
+    locale: function () {
       return this.$i18n.locale
     },
 
@@ -145,6 +147,11 @@ export default defineComponent({
           title: this.$t('Settings.Password Settings.Password Settings'),
           icon: 'key'
         },
+        {
+          type: 'gamepad-settings',
+          title: this.$t('Settings.Password Settings.Password Settings'),
+          icon: 'gamepad'
+        }
       ]
       return settingsComponentsData
     },
@@ -202,7 +209,7 @@ export default defineComponent({
       })
     },
 
-    navigateToSection: function(sectionType) {
+    navigateToSection: function (sectionType) {
       if (this.isInDesktopView) {
         nextTick(() => {
           const sectionElement = this.$refs[sectionType][0].$el
@@ -228,7 +235,7 @@ export default defineComponent({
 
     /* Set the current section to be shown as active in the Settings Menu
     * if it is the lowest section within the top quarter of the viewport (25vh) */
-    markScrolledToSectionAsActive: function() {
+    markScrolledToSectionAsActive: function () {
       const scrollY = window.scrollY + innerHeight / 4
       this.settingsSectionComponents.forEach((section) => {
         const sectionElement = this.$refs[section.type][0].$el
