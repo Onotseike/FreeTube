@@ -1,9 +1,15 @@
 <template>
-  <FtSettingsSection :title="Settings.Gamepad.Settings" />
+  <ft-settings-section :title="$t('Settings.GamePad Settings')">
+    <h4
+      class="groupTitle"
+    >
+      {{ $t('Settings.GamePad Settings.Configure Gamepad Support') }}
+    </h4>
+  </ft-settings-section>
 </template>
 
 <script>
-import GamepadMapping from '../../helpers/gamepad/GamepadMapping'
+import GamepadMapping from '../../helpers/gamepad/gamepadmapping'
 
 export default {
   name: 'GamePadSettings',
@@ -44,3 +50,4 @@ export default {
   },
 }
 </script>
+<style scoped src="./GamePadSettings.css" />

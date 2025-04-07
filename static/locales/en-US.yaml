@@ -688,6 +688,12 @@ Settings:
     Set Password To Prevent Access: Set a password to prevent access to settings
     Set Password: Set Password
     Remove Password: Remove Password
+  GamePad Settings:
+    GamePad Settings: Gamepad Support
+    Configure Gamepad Support: Configure Gamepad Support
+    Gamepad Layout: Gamepad Layout
+    Custom Layout: Custom Layout
+    Reset to Default: Reset to Default
 About:
   #On About page
   About: About

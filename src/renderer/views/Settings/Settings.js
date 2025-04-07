@@ -149,7 +149,7 @@ export default defineComponent({
         },
         {
           type: 'gamepad-settings',
-          title: this.$t('Settings.Password Settings.Password Settings'),
+          title: this.$t('Settings.GamePad Settings.GamePad Settings'),
           icon: 'gamepad'
         }
       ]
