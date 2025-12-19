@@ -1,6 +1,8 @@
 import { computed, defineComponent, nextTick, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import shaka from 'shaka-player'
 import { useI18n } from '../../composables/use-i18n-polyfill'
+import { useGamepadService } from '../../composables/use-gamepad-service'
+import { useVideoPlayerGamepad } from '../../composables/use-video-player-gamepad'
 
 import store from '../../store/index'
 import { DefaultFolderKind, KeyboardShortcuts } from '../../../constants'
@@ -2420,6 +2422,23 @@ export default defineComponent({
 
     // #endregion keyboard shortcuts
 
+    // #region gamepad controls
+    /**
+     * Create player context for gamepad integration
+     */
+    const playerContext = {
+      video,
+      get ui() { return ui },
+      get player() { return player },
+      changeVolume,
+      seekBySeconds,
+      changePlayBackRate,
+      $emit: emit
+    }
+
+    useGamepadService()
+    useVideoPlayerGamepad(playerContext)
+    // #endregion gamepad controls
     let ignoreErrors = false
 
     /**

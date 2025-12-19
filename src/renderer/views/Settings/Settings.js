@@ -9,6 +9,7 @@ import DownloadSettings from '../../components/DownloadSettings/DownloadSettings
 import PrivacySettings from '../../components/PrivacySettings.vue'
 import DataSettings from '../../components/DataSettings/DataSettings.vue'
 import DistractionSettings from '../../components/DistractionSettings/DistractionSettings.vue'
+import GamepadSettings from '../../components/GamepadSettings.vue'
 import ProxySettings from '../../components/ProxySettings/ProxySettings.vue'
 import SponsorBlockSettings from '../../components/SponsorBlockSettings.vue'
 import ParentalControlSettings from '../../components/ParentalControlSettings.vue'
@@ -32,6 +33,7 @@ export default defineComponent({
     'privacy-settings': PrivacySettings,
     'data-settings': DataSettings,
     'distraction-settings': DistractionSettings,
+    'gamepad-settings': GamepadSettings,
     'sponsor-block-settings': SponsorBlockSettings,
     'parental-control-settings': ParentalControlSettings,
     'password-settings': PasswordSettings,
@@ -57,7 +59,7 @@ export default defineComponent({
     }
   },
   computed: {
-    locale: function() {
+    locale: function () {
       return this.$i18n.locale
     },
 
@@ -97,6 +99,11 @@ export default defineComponent({
           type: 'distraction-settings',
           title: this.$t('Settings.Distraction Free Settings.Distraction Free Settings'),
           icon: 'eye-slash'
+        },
+        {
+          type: 'gamepad-settings',
+          title: this.$t('Settings.Gamepad Settings.Gamepad Settings'),
+          icon: 'gamepad'
         },
         {
           type: 'parental-control-settings',
@@ -202,7 +209,7 @@ export default defineComponent({
       })
     },
 
-    navigateToSection: function(sectionType) {
+    navigateToSection: function (sectionType) {
       if (this.isInDesktopView) {
         nextTick(() => {
           const sectionElement = this.$refs[sectionType][0].$el
@@ -228,7 +235,7 @@ export default defineComponent({
 
     /* Set the current section to be shown as active in the Settings Menu
     * if it is the lowest section within the top quarter of the viewport (25vh) */
-    markScrolledToSectionAsActive: function() {
+    markScrolledToSectionAsActive: function () {
       const scrollY = window.scrollY + innerHeight / 4
       this.settingsSectionComponents.forEach((section) => {
         const sectionElement = this.$refs[section.type][0].$el

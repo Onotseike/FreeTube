@@ -314,6 +314,10 @@ const state = {
   uiScale: 100,
   userPlaylistsSortBy: 'latest_played_first',
   userHistorySortBy: 'latest_played_first',
+  gamepadEnabled: true,
+  gamepadDeadzoneThreshold: 0.5,
+  gamepadSensitivity: 'medium',
+  gamepadButtonBindings: { /* custom button mappings */ },
 }
 
 const sideEffectHandlers = {

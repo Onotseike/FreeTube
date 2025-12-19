@@ -265,6 +265,80 @@ const MIXED_SEARCH_HISTORY_ENTRIES_DISPLAY_LIMIT = 4
 // Displayed on the about page and used in the main.js file to only allow bitcoin URLs with this wallet address to be opened
 const ABOUT_BITCOIN_ADDRESS = '1Lih7Ho5gnxb1CwPD4o59ss78pwo2T91eS'
 
+const GamepadButtons = {
+  A: 0,           // Cross/A button
+  B: 1,           // Circle/B button
+  X: 2,           // Square/X button
+  Y: 3,           // Triangle/Y button
+  LB: 4,          // Left bumper
+  RB: 5,          // Right bumper
+  LT: 6,          // Left trigger
+  RT: 7,          // Right trigger
+  BACK: 8,        // Menu/Back button
+  START: 9,       // Start button
+  LEFT_STICK: 10, // Left stick press
+  RIGHT_STICK: 11, // Right stick press
+}
+
+const GamepadAxes = {
+  LEFT_STICK_X: 0,
+  LEFT_STICK_Y: 1,
+  RIGHT_STICK_X: 2,
+  RIGHT_STICK_Y: 3,
+  LEFT_TRIGGER: 4,
+  RIGHT_TRIGGER: 5,
+}
+
+const GamepadActions = {
+  // Playback
+  PLAY_PAUSE: 'play_pause',
+  MUTE: 'mute',
+  VOLUME_UP: 'volume_up',
+  VOLUME_DOWN: 'volume_down',
+  SEEK_FORWARD: 'seek_forward',
+  SEEK_BACKWARD: 'seek_backward',
+  SKIP_FORWARD: 'skip_forward',
+  SKIP_BACKWARD: 'skip_backward',
+
+  // UI Navigation
+  NAVIGATE_UP: 'navigate_up',
+  NAVIGATE_DOWN: 'navigate_down',
+  NAVIGATE_LEFT: 'navigate_left',
+  NAVIGATE_RIGHT: 'navigate_right',
+  SELECT: 'select',
+  BACK: 'back',
+
+  // Player Controls
+  FULLSCREEN: 'fullscreen',
+  THEATRE_MODE: 'theatre_mode',
+  PICTURE_IN_PICTURE: 'picture_in_picture',
+  SPEED_UP: 'speed_up',
+  SPEED_DOWN: 'speed_down',
+  CAPTIONS: 'captions',
+  NEXT_VIDEO: 'next_video',
+  PREV_VIDEO: 'prev_video',
+}
+
+// Mapping gamepad buttons/axes to actions
+const GamepadBindings = {
+  // A button = Play/Pause
+  [GamepadButtons.A]: GamepadActions.PLAY_PAUSE,
+  // B button = Go Back
+  [GamepadButtons.B]: GamepadActions.BACK,
+  // X button = Fullscreen
+  [GamepadButtons.X]: GamepadActions.FULLSCREEN,
+  // Y button = Theatre mode
+  [GamepadButtons.Y]: GamepadActions.THEATRE_MODE,
+  // LB = Seek backward
+  [GamepadButtons.LB]: GamepadActions.SEEK_BACKWARD,
+  // RB = Seek forward
+  [GamepadButtons.RB]: GamepadActions.SEEK_FORWARD,
+  // Start = Captions toggle
+  [GamepadButtons.START]: GamepadActions.CAPTIONS,
+  // Left stick = Volume (Y-axis) & Speed (X-axis)
+  [GamepadAxes.LEFT_STICK_Y]: GamepadActions.VOLUME_UP, // positive = up
+}
+
 export {
   IpcChannels,
   DBActions,
@@ -280,4 +354,8 @@ export {
   SEARCH_RESULTS_DISPLAY_LIMIT,
   MIXED_SEARCH_HISTORY_ENTRIES_DISPLAY_LIMIT,
   ABOUT_BITCOIN_ADDRESS,
+  GamepadButtons,
+  GamepadAxes,
+  GamepadActions,
+  GamepadBindings,
 }
