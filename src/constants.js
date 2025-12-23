@@ -278,15 +278,20 @@ const GamepadButtons = {
   START: 9,       // Start button
   LEFT_STICK: 10, // Left stick press
   RIGHT_STICK: 11, // Right stick press
+  DPAD_UP: 12,    // D-pad Up
+  DPAD_DOWN: 13,  // D-pad Down
+  DPAD_LEFT: 14,  // D-pad Left
+  DPAD_RIGHT: 15, // D-pad Right
+  HOME: 16,       // Xbox Button / PS Button
 }
 
 const GamepadAxes = {
-  LEFT_STICK_X: 0,
-  LEFT_STICK_Y: 1,
-  RIGHT_STICK_X: 2,
-  RIGHT_STICK_Y: 3,
-  LEFT_TRIGGER: 4,
-  RIGHT_TRIGGER: 5,
+  LEFT_STICK_X: 0,  // -1.0 (left) to +1.0 (right)
+  LEFT_STICK_Y: 1,  // -1.0 (up) to +1.0 (down)
+  RIGHT_STICK_X: 2, // -1.0 (left) to +1.0 (right)
+  RIGHT_STICK_Y: 3, // -1.0 (up) to +1.0 (down)
+  // Note: Triggers are NOT axes in standard mapping!
+  // Use GamepadButtons.LT (6) and GamepadButtons.RT (7) with .value property
 }
 
 const GamepadActions = {
